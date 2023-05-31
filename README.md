@@ -61,12 +61,12 @@ class demoConfigServiceProvider extends ServiceProvider
 {
     public function register()
     {
-        $configData = YourModel::all()->pluck('value', 'key')->toArray();
+        $configData = YourModel::all()->pluck('value')->toArray();
         
         $formattedData = [];
 
-        foreach ($configData as $key => $value) {
-            $formattedData["your_custom_prefix." . $key] = $value;
+        foreach ($configData as $index => $value) {
+            $formattedData["demo.$index"] = $value;
         }
 
         Config::set('demo', $formattedData);
@@ -74,10 +74,10 @@ class demoConfigServiceProvider extends ServiceProvider
 }
 ```
 
-In this code, we assume that the `value` column from your database represents the configuration value. The keys are generated within the service provider by adding a custom prefix (`your_custom_prefix.`) to each key retrieved from the database.
+In this code, we retrieve the values from the database using `pluck('value')` since you don't have a separate key column. We then iterate over the values and generate keys using the `$index` variable as an incremental index. The generated keys are prefixed with `'demo.'`.
 
-Remember to replace `YourModel` with the actual model representing your database table that contains the configuration data.
+Ensure that you replace `YourModel` with the appropriate model representing your database table.
 
-By using this approach, the configuration keys will be set within the service provider, allowing you to define custom keys for the values retrieved from the database. The modified configuration array will be accessible throughout your application using the `config('demo')` helper function.
+By using this approach, the configuration keys will be dynamically generated within the service provider. The modified configuration array will be accessible throughout your application using the `config('demo')` helper function.
 
 Don't forget to add your custom service provider to the `providers` array in the `config/app.php` file as mentioned in the previous response.
