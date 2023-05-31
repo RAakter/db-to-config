@@ -1,5 +1,4 @@
 # db-to-config
-To read values from the database and populate the configuration array
 
 To read values from your database and populate the configuration array in your `demo.php` file, you can follow these steps:
 
