@@ -48,3 +48,36 @@ Now, when your Laravel application starts, the `register` method of your `demoCo
 Make sure you have properly set up your database connection details in the `.env` file and configured the model to connect to the correct database table.
 
 Please note that this approach assumes that your database table has two columns: `key` and `value`, where `key` represents the configuration key, and `value` represents the corresponding configuration value. Adjust the code accordingly if your table structure is different.
+
+# Exception
+If your database doesn't have a separate key column, and you want to set the keys within the service provider while fetching values from the database, you can modify the code as follows:
+
+```php
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\ServiceProvider;
+use App\Models\YourModel; // Replace with the appropriate model
+
+class demoConfigServiceProvider extends ServiceProvider
+{
+    public function register()
+    {
+        $configData = YourModel::all()->pluck('value', 'key')->toArray();
+        
+        $formattedData = [];
+
+        foreach ($configData as $key => $value) {
+            $formattedData["your_custom_prefix." . $key] = $value;
+        }
+
+        Config::set('demo', $formattedData);
+    }
+}
+```
+
+In this code, we assume that the `value` column from your database represents the configuration value. The keys are generated within the service provider by adding a custom prefix (`your_custom_prefix.`) to each key retrieved from the database.
+
+Remember to replace `YourModel` with the actual model representing your database table that contains the configuration data.
+
+By using this approach, the configuration keys will be set within the service provider, allowing you to define custom keys for the values retrieved from the database. The modified configuration array will be accessible throughout your application using the `config('demo')` helper function.
+
+Don't forget to add your custom service provider to the `providers` array in the `config/app.php` file as mentioned in the previous response.
