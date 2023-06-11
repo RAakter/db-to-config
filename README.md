@@ -84,6 +84,7 @@ Don't forget to add your custom service provider to the `providers` array in the
 
 # If you want to create custom key for the values
 
+```php
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\ServiceProvider;
 use App\Models\YourModel; // Replace with the appropriate model
@@ -112,3 +113,4 @@ class DemoConfigServiceProvider extends ServiceProvider
         return $words[0];
     }
 }
+```
