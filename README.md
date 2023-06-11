@@ -49,7 +49,7 @@ Make sure you have properly set up your database connection details in the `.env
 
 Please note that this approach assumes that your database table has two columns: `key` and `value`, where `key` represents the configuration key, and `value` represents the corresponding configuration value. Adjust the code accordingly if your table structure is different.
 
-# Exception
+# If you want to make the $index value as key
 If your database doesn't have a separate key column, and you want to set the keys within the service provider while fetching values from the database, you can modify the code as follows:
 
 ```php
@@ -82,28 +82,33 @@ By using this approach, the configuration keys will be dynamically generated wit
 
 Don't forget to add your custom service provider to the `providers` array in the `config/app.php` file as mentioned in the previous response.
 
+# If you want to create custom key for the values
 
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\ServiceProvider;
+use App\Models\YourModel; // Replace with the appropriate model
 
-public function boot()
+class DemoConfigServiceProvider extends ServiceProvider
+{
+    public function register()
     {
         $this->app->booted(function () {
-            $data = DemoModel::all()->pluck('id','value')->toArray();
+            $configData = YourModel::all()->pluck('id','value')->toArray();
 
-            $configData = [];
+            $formattedData = [];
 
-            foreach ($data as $index => $value) {
-                $key = 'DEMO_' . strtoupper($this->getFirstWord($index));
-                $configData[$key] = $value;
+            foreach ($configData as $value) {
+                $key = 'demo_' . strtoupper($this->getFirstWord($value));
+                $formattedData[$key] = $value;
             }
 
-            Config::set('demo', $configData);
-
+            Config::set('demo', $formattedData);
         });
-
     }
 
-    private function getFirstWord($value): string
+    private function getFirstWord($value)
     {
-        $words = explode(" ", $value) ?? [];
-        return $words[0] ?? '';
+        $words = explode(" ", $value);
+        return $words[0];
     }
+}
