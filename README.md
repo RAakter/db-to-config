@@ -81,3 +81,29 @@ Ensure that you replace `YourModel` with the appropriate model representing your
 By using this approach, the configuration keys will be dynamically generated within the service provider. The modified configuration array will be accessible throughout your application using the `config('demo')` helper function.
 
 Don't forget to add your custom service provider to the `providers` array in the `config/app.php` file as mentioned in the previous response.
+
+
+
+public function boot()
+    {
+        $this->app->booted(function () {
+            $data = DemoModel::all()->pluck('id','value')->toArray();
+
+            $configData = [];
+
+            foreach ($data as $index => $value) {
+                $key = 'DEMO_' . strtoupper($this->getFirstWord($index));
+                $configData[$key] = $value;
+            }
+
+            Config::set('demo', $configData);
+
+        });
+
+    }
+
+    private function getFirstWord($value): string
+    {
+        $words = explode(" ", $value) ?? [];
+        return $words[0] ?? '';
+    }
